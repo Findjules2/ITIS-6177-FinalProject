@@ -1,6 +1,16 @@
 # Azure Computer Vision API with JS Client SDK
 
-Simple usage of Computer Vision API with Express JS
+Simple usage of Computer Vision API with Express JS and swagger documentation.
+This Demo will analyze a .jpg or .png URL and give you a caption, confidence level, and tags of the image.
+
+Endpoint for Swagger Docs
+/docs 
+
+API Endpoints being used for this project (UI, generates caption, generates confidence score, generates tags)
+/
+/caption
+/confidence
+/tag
 
 ### Usage
 
@@ -16,7 +26,7 @@ npm install
 APIKEY="<yourapikey>"
 AZUREENDPOINT="<yourendpoint>"
     
-4) run the application on localhost:3007
+4) run the application on localhost:3000
 
 ```
 npm start
