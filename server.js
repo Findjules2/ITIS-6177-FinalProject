@@ -1,6 +1,7 @@
 var express = require('express');
 const cors = require('cors');
 var app = express();
+const bodyParser = require('body-parser');
 var path = require('path');
 require('dotenv').config()
 
@@ -24,7 +25,7 @@ const specs = swaggerJsdoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(cors());
 
-app.use(express.json())
+app.use(bodyParser.json())
 app.use(express.urlencoded({
     extended: true
 }))
@@ -69,22 +70,20 @@ app.get('/', function(req, res) {
  *              description: Status message states error of url not found.
  */
 
-app.post('/caption', (req, res) => {
-
-    const describeURL = req.body.imageURL
-    console.log('Analyzing URL image to caption...', describeURL);
-    console.log(req);
-    
-    const caption = new Promise((resolve) => {
-        resolve(computerVisionClient.describeImage(describeURL))
-    })
-    caption.then((elm) => {
-        console.log(elm);
-        res.json({ caption: elm.captions[0].text })
-        
-    }).catch(err => console.log(err));
-    
-})
+app.post('/caption', async (req, res) => {
+    const { imageURL } = req.body;
+  
+    console.log('Analyzing URL image to caption...', imageURL);
+  
+    try {
+      const imageAnalysis = await computerVisionClient.describeImage(imageURL);
+  
+      res.json({ caption: imageAnalysis.captions[0].text });
+    } catch (error) {
+      console.error('Error analyzing image:', error);
+      res.status(400).json({ error: 'An error occurred while analyzing the image' });
+    }
+  });
 
 /**
  * @swagger
@@ -109,31 +108,32 @@ app.post('/caption', (req, res) => {
  *          400:
  *              description: Status message states error of url not found.
  */
+// Assuming computerVisionClient is properly defined elsewhere in your code
 
 app.post('/tag', (req, res) => {
-
-    const describeURL = req.body.imageURL
+    const describeURL = req.body.imageURL;
     console.log('Analyzing URL image to tag...', describeURL);
-    console.log(req);
-    
-    const tag = new Promise((resolve) => {
-        resolve(computerVisionClient.describeImage(describeURL))
-    })
-    tag.then((elm) => {
-        console.log(elm);
-        let a, b, rest;
-        res.json({ tag: elm.tags[0,1,2,3,4,5] })
 
-    // tag.then((elm) => {
-    //     JSONArray arr = elm.tags
-    //     for(JSONObject o: arr){
-    //         parse(o);
-    //     }
-    // })
-        
-    }).catch(err => console.log(err));
-    
-})
+    // Assuming computerVisionClient.describeImage returns a Promise
+    const tag = computerVisionClient.describeImage(describeURL);
+
+    tag.then((result) => {
+        console.log(result);
+
+        // Extracting the first 6 tags (index 0 to 5) from the tags array
+        const firstSixTags = result.tags.slice(0, 160); 
+        const sixTags = firstSixTags.join(", ");
+
+        res.json({ tag: sixTags });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Image analysis failed' });
+    });
+});
+
+  
+  
+
 
 /**
  * @swagger
