@@ -1,0 +1,13 @@
+.container{
+    position: relative;
+    background-color: rgb(190, 235, 245);
+}
+
+h1 {
+    color: black;
+    
+}
+
+img{
+    height: 250px;
+}
